@@ -1,356 +1,214 @@
 <!doctype html>
-<html lang="el">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>NX CROSSY TIMER</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<title>NX RISK</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <style>
-:root{
-  --bg:#050607;
-  --panel:#070809;
-  --nx:#6aff6a;
-  --danger:#ff3b3b;
-  --muted:rgba(234,255,234,.65);
-}
 html,body{
-  margin:0;height:100%;
-  background:var(--bg);
-  display:grid;place-items:center;
-  font-family:system-ui,Arial;
-  color:#eaffea;
-}
-.frame{
-  width:400px;height:640px;
-  padding:10px;
-  border-radius:18px;
-  background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.18));
-  box-shadow:0 20px 60px rgba(0,0,0,.65);
-}
-.game{
-  width:100%;height:100%;
-  position:relative;
-  overflow:hidden;
-  border-radius:14px;
-  background:
-    radial-gradient(1000px 500px at 50% 0%, rgba(106,255,106,.07), transparent 55%),
-    var(--panel);
-}
-.game:before{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-  background-size:28px 28px;
-  opacity:.25;
-}
-.game:after{
-  content:"";
-  position:absolute; inset:-40px;
-  background:radial-gradient(circle at 50% 35%, transparent 40%, rgba(0,0,0,.55) 78%);
-  pointer-events:none;
-}
-.ui{
-  position:absolute;top:12px;left:0;right:0;
-  text-align:center;
-  font-size:12px;
-  letter-spacing:2px;
-  color:var(--muted);
-  z-index:50;
-}
-.timerbar{
-  position:absolute;top:38px;left:20px;
-  width:360px;height:8px;
-  background:rgba(255,255,255,.08);
-  border-radius:999px;
-  overflow:hidden;
-  z-index:50;
-}
-.timer{
+  margin:0;
   height:100%;
-  width:100%;
-  background:linear-gradient(90deg,#6aff6a,#9bff9b);
+  background:#050607;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  color:#eaffea;
+  display:grid;
+  place-items:center;
 }
-.road{
-  position:absolute;
-  width:100%;height:48px;
-  background:#1a1c1e;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
-}
-.road.l1{ top:170px; }
-.road.l2{ top:240px; }
 
-.car{
-  position:absolute;
-  width:40px;height:22px;
-  background:var(--danger);
-  border-radius:6px;
-  box-shadow:0 10px 22px rgba(0,0,0,.35);
+/* GAME WRAP */
+.game{
+  width:320px;
+  text-align:center;
 }
-.player{
-  position:absolute;
-  width:22px;height:22px;
-  background:var(--nx);
-  top:450px;
-  left:189px;
-  border-radius:6px;
-  box-shadow:0 0 18px rgba(106,255,106,.9);
-  z-index:40;
-  will-change:transform;
+
+/* TITLE */
+.title{
+  letter-spacing:4px;
+  opacity:.55;
+  margin-bottom:22px;
 }
-.trail{
-  position:absolute;
-  width:22px;height:22px;
-  border-radius:6px;
-  pointer-events:none;
-  z-index:30;
-  background:linear-gradient(180deg, rgba(106,255,106,.6), rgba(106,255,106,.1));
-  will-change:transform,opacity;
+
+/* RISK NUMBER */
+.risk{
+  font-size:64px;
+  font-weight:800;
+  margin:18px 0;
+  color:#6aff6a;
+  transition:.2s;
 }
-.panic{
-  position:absolute; inset:0;
-  background:rgba(255,50,50,.14);
-  opacity:0;
-  pointer-events:none;
-  z-index:45;
+.risk.danger{
+  color:#ff3b3b;
+  animation:pulse .6s infinite alternate;
 }
-.panic.active{ animation:pulse .55s infinite; }
 @keyframes pulse{
-  0%{opacity:.08}50%{opacity:.3}100%{opacity:.08}
+  from{transform:scale(1)}
+  to{transform:scale(1.05)}
 }
-.overlay{
-  position:absolute; inset:0;
-  background:rgba(5,6,7,.92);
-  display:grid;place-items:center;
+
+/* BAR */
+.bar{
+  height:10px;
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:22px;
+}
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#4cff4c,#ff3b3b);
+  transition:.15s;
+}
+
+/* SCORE */
+.score{
+  font-size:22px;
+  opacity:.85;
+  margin-bottom:20px;
+}
+
+/* BUTTONS */
+button{
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  font-size:14px;
+  letter-spacing:2px;
+  background:#0b0d0e;
+  border:1px solid #1aff1a;
+  color:#caffca;
   cursor:pointer;
-  z-index:60;
 }
-.overlay.hidden{display:none}
+button.secondary{
+  border-color:#555;
+  color:#aaa;
+}
+button:hover{background:#111}
+
+/* MESSAGE */
+.msg{
+  margin-top:14px;
+  font-size:12px;
+  opacity:.6;
+  min-height:18px;
+}
+.dead{color:#ff3b3b}
+
+/* NXCODE BADGE */
+.nx-badge{
+  position:fixed;
+  right:14px;
+  bottom:12px;
+  font-size:11px;
+  letter-spacing:2px;
+  text-decoration:none;
+  color:rgba(180,255,180,.45);
+  border:1px solid rgba(180,255,180,.25);
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(5,6,7,.65);
+  backdrop-filter:blur(6px);
+  transition:.2s ease;
+}
+.nx-badge .muted{opacity:.5}
+.nx-badge:hover{
+  color:#6aff6a;
+  border-color:#6aff6a;
+  box-shadow:0 0 12px rgba(106,255,106,.35);
+}
 </style>
 </head>
 
 <body>
-<div class="frame">
-<div class="game" id="game">
 
-  <div class="ui">SCORE: <span id="score">0</span></div>
-  <div class="timerbar"><div class="timer" id="timer"></div></div>
+<div class="game">
+  <div class="title">NX RISK</div>
 
-  <div class="road l1" id="lane1"></div>
-  <div class="road l2" id="lane2"></div>
+  <div id="riskText" class="risk">0%</div>
+  <div class="bar"><div id="barFill" class="fill"></div></div>
 
-  <div class="panic" id="panic"></div>
-  <div class="player" id="player"></div>
+  <div id="score" class="score">SCORE: 0</div>
 
-  <div class="overlay" id="overlay">
-    <div>← → MOVE<br>SPACE START / CROSS<br><small>CLICK TO RESTART</small></div>
-  </div>
+  <button onclick="takeRisk()">TAKE RISK</button>
+  <button class="secondary" onclick="cashOut()">CASH OUT</button>
 
+  <div id="msg" class="msg"></div>
 </div>
-</div>
+
+<!-- NXCODE BADGE -->
+<a href="https://nxcode.gr/" target="_blank" class="nx-badge">
+  <span>NX</span><span class="muted">CODE</span>
+</a>
 
 <script>
-const game = document.getElementById("game");
-const lanes = [
-  { el: document.getElementById("lane1"), y:170 },
-  { el: document.getElementById("lane2"), y:240 }
-];
-const player = document.getElementById("player");
-const overlay = document.getElementById("overlay");
-const scoreEl = document.getElementById("score");
-const timerEl = document.getElementById("timer");
-const panicEl = document.getElementById("panic");
+let trueRisk = 0;
+let shownRisk = 0;
+let reward = 0;
+let alive = true;
 
-let alive=false, started=false;
-let score=0;
-let timerMax=3.2, timer=timerMax;
-let lastTime=0;
+const riskText = document.getElementById("riskText");
+const barFill  = document.getElementById("barFill");
+const scoreEl  = document.getElementById("score");
+const msgEl    = document.getElementById("msg");
 
-let speed=120;
-let cars=[];
-let animating=false;
+function rand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
 
-let px=0, py=0;
-const SPEED=360, LEFT=-175, RIGHT=175;
-const BASE_X=189;
-const BASE_Y=450;
-const keys={left:false,right:false};
+function getScore(){
+  const mult = 1 + (shownRisk/100)*3;
+  return Math.floor(reward * mult);
+}
 
-function restart(){ location.reload(); }
+function updateUI(){
+  riskText.textContent = shownRisk + "%";
+  barFill.style.width = shownRisk + "%";
+  scoreEl.textContent = "SCORE: " + getScore();
+  riskText.classList.toggle("danger", shownRisk >= 90);
+}
+
+function takeRisk(){
+  if(!alive) return;
+
+  trueRisk += rand(5,12);
+  reward += rand(1,5);
+
+  shownRisk = Math.min(99, Math.floor(trueRisk));
+  msgEl.textContent = shownRisk >= 90 ? "STILL SAFE ✓" : "";
+
+  // ψεύτικο 99%, πραγματικός θάνατος αργότερα
+  if(trueRisk >= rand(115,140)){
+    die();
+  }
+
+  updateUI();
+}
+
+function cashOut(){
+  if(!alive) return;
+  alive = false;
+
+  const score = getScore();
+  history.replaceState({}, "", `?score=${score}&risk=${shownRisk}`);
+  msgEl.textContent = "CASHED OUT ✓";
+}
 
 function die(){
-  if(!alive) return;
-  alive=false;
-  overlay.classList.remove("hidden");
+  alive = false;
+  msgEl.innerHTML = "<span class='dead'>YOU PUSHED TOO FAR ✕</span>";
+
+  const score = getScore();
+  history.replaceState({}, "", `?score=${score}&risk=99`);
 }
 
-/* SAFE SPAWN — GUARANTEED GAP */
-function spawnCars(){
-  cars=[];
-  lanes.forEach((lane,i)=>{
-    lane.el.innerHTML="";
-    const gapSize = Math.max(70, 150 - score*6);
-    const gapX = 60 + Math.random()*(400-gapSize-120) + i*35;
-
-    let x=-60;
-    while(x<400){
-      if(x > gapX-40 && x < gapX+gapSize){
-        x+=gapSize; continue;
-      }
-      const c=document.createElement("div");
-      c.className="car";
-      c.style.left=x+"px";
-      // store lane absolute Y (top of car inside lane is 13px)
-      c.carY = lane.y + 13;     // absolute top
-      c.dir = Math.random()<0.5 ? -1 : 1;
-      lane.el.appendChild(c);
-      cars.push(c);
-      x+=42;
-    }
-  });
+// Show shared run
+const p = new URLSearchParams(location.search);
+if(p.get("score")){
+  msgEl.textContent =
+    `Someone left with ${p.get("score")} at ${p.get("risk")}%`;
 }
-
-function start(){
-  alive=true; started=true;
-  overlay.classList.add("hidden");
-  score=0;
-  px=0; py=0;
-  speed=120;
-  timerMax=3.2; timer=timerMax;
-  scoreEl.textContent="0";
-  spawnCars();
-  lastTime=performance.now();
-  requestAnimationFrame(loop);
-}
-
-/* CROSS (no collision here πλέον — collision γίνεται per-frame στο loop) */
-function tryCross(){
-  if(animating) return;
-  animating=true;
-
-  const D=520, S=performance.now();
-  function anim(t){
-    if(!alive) return;
-
-    const p=Math.min(1,(t-S)/D);
-    const eased = p<0.5 ? 2*p*p : 1 - Math.pow(-2*p+2,2)/2;
-    py = -330 * eased;
-
-    player.style.transform=`translate(${px}px,${py}px)`;
-
-    if(p<1){
-      requestAnimationFrame(anim);
-      return;
-    }
-
-    // success (εφόσον δεν πέθανες στο loop)
-    score++;
-    scoreEl.textContent=score;
-    speed = Math.min(speed + 6, 260);
-    timerMax = Math.max(1.2, 3.2 - score*0.05);
-    timer = timerMax;
-    spawnCars();
-
-    py=0;
-    animating=false;
-  }
-  requestAnimationFrame(anim);
-}
-
-/* COMET TRAIL */
-function spawnTrail(){
-  const t=document.createElement("div");
-  t.className="trail";
-  t.style.transform=`translate(${px}px,${py}px)`;
-  game.appendChild(t);
-  let life=1;
-  (function fade(){
-    life-=0.07;
-    t.style.opacity=life;
-    if(life<=0){t.remove();return;}
-    requestAnimationFrame(fade);
-  })();
-}
-
-/* COLLISION — per frame, με πραγματικό current py */
-function checkCollisions(){
-  const pCenterX = (BASE_X + px) + 11;
-  const pCenterY = (BASE_Y + py) + 11;
-
-  for(const c of cars){
-    const carLeft = parseFloat(c.style.left);
-    const carCenterX = carLeft + 20;
-    const carCenterY = c.carY + 11;
-
-    const dx = Math.abs(carCenterX - pCenterX);
-    const dy = Math.abs(carCenterY - pCenterY);
-
-    // AABB-ish thresholds (λίγο forgiving αλλά σωστό)
-    if(dx < 30 && dy < 20){
-      die();
-      return;
-    }
-  }
-}
-
-function loop(t){
-  if(!alive) return;
-  const dt=(t-lastTime)/1000;
-  lastTime=t;
-
-  timer-=dt;
-  const ratio = timer/timerMax;
-  timerEl.style.width=(Math.max(0,ratio)*100)+"%";
-
-  if(ratio<0.18){
-    panicEl.classList.add("active");
-    speed *= 1.03;
-  }else{
-    panicEl.classList.remove("active");
-  }
-
-  if(timer<=0){ die(); return; }
-
-  // movement
-  if(keys.left) px-=SPEED*dt;
-  if(keys.right) px+=SPEED*dt;
-  px=Math.max(LEFT,Math.min(RIGHT,px));
-
-  // render player even while animating (py is current)
-  player.style.transform=`translate(${px}px,${py}px)`;
-
-  // tail
-  if(Math.random()<0.28) spawnTrail();
-
-  // move cars
-  cars.forEach(c=>{
-    let x=parseFloat(c.style.left);
-    x+=c.dir*speed*dt;
-    if(x>400)x=-60;
-    if(x<-60)x=400;
-    c.style.left=x+"px";
-  });
-
-  // ✅ collision κάθε frame (ΤΩΡΑ ΣΚΟΤΩΝΕΙ)
-  checkCollisions();
-
-  requestAnimationFrame(loop);
-}
-
-window.addEventListener("keydown",e=>{
-  if(e.code==="ArrowLeft") keys.left=true;
-  if(e.code==="ArrowRight") keys.right=true;
-  if(e.code==="Space"){
-    if(!started){ start(); return; }
-    if(alive) tryCross();
-  }
-});
-window.addEventListener("keyup",e=>{
-  if(e.code==="ArrowLeft") keys.left=false;
-  if(e.code==="ArrowRight") keys.right=false;
-});
-overlay.addEventListener("click",()=>restart());
 </script>
+
 </body>
 </html>
